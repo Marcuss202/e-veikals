@@ -12,10 +12,10 @@
         <div class="wrapper">
             <div class="leftNavBar">
                 <div class="logo">
-                    <img src="#" alt="E-veikals Logo">
+                    <h2>WEBFLOW</h2>
                 </div>
                 <div class="navBarLinks">
-                    <a href="#">Showcase</a>
+                    <a cass="active" href="#">Showcase</a>
                     <a href="#">Designers</a>
                     <a href="#">Learn & Support</a>
                 </div>
@@ -26,6 +26,32 @@
             </div>
         </div>
     </div>
+    <div class="secondLevelNavBlock">
+        <div class="wrapper">
+            <div class="secondLevelNavHeader">Featured Products</div>
+            <div class="secondLevelNavBarLinks">
+                <a href="#" data-category="all">All</a>
+                <a href="#" data-category="Electronics">Electronics</a>
+                <a href="#" data-category="Fashion">Fashion</a>
+                <a href="#" data-category="Home & Kitchen">Home & Kitchen</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading products...</p>
+    </div>
+
+    <!-- Main content area -->
+    <main class="main-content">
+        <div class="wrapper">
+            <div id="items-grid" class="items-grid">
+                <!-- Items will be dynamically loaded here -->
+            </div>
+        </div>
+    </main>
 
     <script src="script.js"></script>
 </body>
