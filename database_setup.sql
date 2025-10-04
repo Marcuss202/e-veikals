@@ -1,6 +1,6 @@
 -- Create database
-CREATE DATABASE IF NOT EXISTS eveikals_db;
-USE eveikals_db;
+CREATE DATABASE IF NOT EXISTS `e-veikalsDB`;
+USE `e-veikalsDB`;
 
 -- Create items table
 CREATE TABLE IF NOT EXISTS items (
