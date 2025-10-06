@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Admin Panel - Add Products</title>
+    <style>
+        .admin-form {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .submit-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+        }
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        .submit-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .info-box {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        .info-box h4 {
+            margin: 0 0 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="mainNavBarBlock">
+        <div class="wrapper">
+            <div class="leftNavBar">
+                <div class="logo">
+                    <h2>ADMIN PANEL</h2>
+                </div>
+            </div>
+            <div class="rightNavBar">
+                <a href="index.html">Back to Store</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-form">
+        <div class="info-box">
+            <h4>🔄 Auto-Update Feature</h4>
+            <p>When you add a product here, it will update both the database AND the SQL file. This means when someone clones your repository, they'll get all the latest products!</p>
+        </div>
+
+        <h2>Add New Product</h2>
+        <div id="success-message" class="success-message">
+            Product added successfully! Database and SQL file updated.
+        </div>
+        
+        <form id="add-product-form">
+            <div class="form-group">
+                <label for="title">Product Title:</label>
+                <input type="text" id="title" name="title" required placeholder="Enter product name">
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required placeholder="Describe the product features and benefits"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="image_url">Image URL:</label>
+                <input type="url" id="image_url" name="image_url" placeholder="https://images.unsplash.com/photo-xxx?w=400" required>
+                <small style="color: #666; font-size: 12px;">💡 Tip: Use Unsplash images with ?w=400 for consistent sizing</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Price ($):</label>
+                <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Home & Kitchen">Home & Kitchen</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Accessories">Accessories</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submit-btn">
+                Add Product & Update SQL File
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('add-product-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Adding Product...';
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('add_item_with_sql.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('success-message').style.display = 'block';
+                    this.reset();
+                    
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        document.getElementById('success-message').style.display = 'none';
+                    }, 5000);
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error adding product: ' + error.message);
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    </script>
+</body>
+</html>

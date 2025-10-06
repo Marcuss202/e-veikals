@@ -223,8 +223,10 @@ a {
 .items-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 20px 0;
+    gap: 24px;
+    padding: 40px 20px; /* Add padding instead of margin */
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* Item card styles */
