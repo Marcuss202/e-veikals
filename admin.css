@@ -1,0 +1,170 @@
+/* Clean admin panel styles - improved layout and spacing */
+:root{
+  --bg: #f6f8fb;
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --border: #e6e9ef;
+  --success: #10b981;
+  --danger: #ef4444;
+  --radius: 8px;
+  --max-width: 1200px;
+  --gap: 24px;
+  --left-width: 460px;
+  --shadow: 0 6px 18px rgba(18, 26, 38, 0.06);
+}
+
+*{box-sizing:border-box}
+body{
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  margin:20px;
+  background: var(--bg);
+  color: #111827;
+}
+
+/* center content and keep comfortable max width */
+.page{
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* two-column layout */
+.container{
+  display:flex;
+  gap: var(--gap);
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* left column fixed-ish for the big card and create form */
+.left{
+  width: var(--left-width);
+  min-width: 300px;
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+}
+
+/* right column grows */
+.right{
+  flex:1 1 0;
+  min-width: 320px;
+}
+
+/* card styles */
+.card{
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+/* Big card visuals */
+#bigCard { padding: 20px; display:flex; flex-direction:column; gap:12px; }
+#bigCard h2{ margin:0; font-size:1.25rem; line-height:1.2; }
+#bigCard .small{ color: var(--muted); font-size:0.95rem; }
+
+/* image */
+.card img{
+  width:100%;
+  height:auto;
+  border-radius:6px;
+  display:block;
+  object-fit:cover;
+  max-height:240px;
+}
+
+#createCard {
+    background-color: #b0d8e9;
+}
+
+/* create / edit forms */
+form .row{ margin-bottom:10px; }
+
+input  {
+  width:100%;
+  padding:8px 10px;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+  background: #fff;
+  font-size:0.95rem;
+  color: #111827;
+}
+textarea{ min-height:90px; resize:vertical; }
+input {max-width: 300px; }
+
+/* table and list */
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:0.95rem;
+}
+thead th{
+  text-align:left;
+  padding:10px 8px;
+  font-weight:600;
+  color:#374151;
+  background: linear-gradient(180deg,#fbfdff,#f7f9fc);
+  border-bottom:1px solid var(--border);
+}
+tbody td{
+  padding:12px 8px;
+  border-bottom:1px solid #f1f5f9;
+  vertical-align:middle;
+  color:#111827;
+}
+tbody tr:nth-child(even){ background: #ffffff; }
+tbody tr:nth-child(odd){ background: #fbfbfc; }
+
+/* clamp long text */
+td a, td span { display:inline-block; max-width: 260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:middle; }
+
+/* actions */
+.actions button{
+  margin-right:8px;
+}
+
+#showCreateBtn{
+  margin-bottom: 10px;
+  background-color: var(--accent);
+  color: white;
+}
+
+.btn{
+  display:inline-block;
+  padding:7px 10px;
+  border-radius:6px;
+  border:1px solid #c7cdd6;
+  background:#f8fafc;
+  color:#111827;
+  cursor:pointer;
+  font-size:0.9rem;
+}
+.btn.primary{
+  background: var(--accent);
+  color: #fff;
+  border-color: rgba(0,0,0,0.08);
+}
+.btn.danger{
+  background: var(--danger);
+  color: #fff;
+  border-color: rgba(0,0,0,0.06);
+}
+.btn:active{ transform: translateY(1px); }
+
+/* small helper text */
+.small{ color: var(--muted); font-size:0.9rem; }
+
+/* generic hidden helper */
+.hidden { display:none !important; }
+
+/* edit card hidden by class rather than inline (kept for specificity) */
+#editCard.hidden{ display:none !important; }
+
+/* responsive */
+@media (max-width: 920px){
+  .container{ flex-direction:column; }
+  .left{ width:100%; }
+  td a, td span { max-width: 140px; }
+}

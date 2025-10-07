@@ -1,5 +1,5 @@
 <?php
-include 'connect_silent.php';
+include 'connect.php';
 
 header('Content-Type: application/json');
 
@@ -9,60 +9,47 @@ try {
     }
     
     // Get form data
-    $title = $_POST['title'] ?? '';
-    $description = $_POST['description'] ?? '';
-    $image_url = $_POST['image_url'] ?? '';
+    $title = trim($_POST['title'] ?? '');
+    $description = trim($_POST['description'] ?? '');
     $price = $_POST['price'] ?? 0;
-    $category = $_POST['category'] ?? '';
+    $category = trim($_POST['category'] ?? '');
+
+    // handle file upload (optional)
+    $image_url = '';
+    if (!empty($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+        $uploadsDir = __DIR__ . '/uploads';
+        if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
+        $tmp = $_FILES['image_file']['tmp_name'];
+        $name = basename($_FILES['image_file']['name']);
+        // sanitize filename
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        $base = pathinfo($name, PATHINFO_FILENAME);
+        $safeBase = preg_replace('/[^A-Za-z0-9-_]/', '_', $base);
+        $targetName = $safeBase . '_' . time() . '.' . $ext;
+        $target = $uploadsDir . '/' . $targetName;
+        if (!move_uploaded_file($tmp, $target)) {
+            throw new Exception('Failed to move uploaded file');
+        }
+        // accessible URL path relative to project
+        $image_url = 'uploads/' . $targetName;
+    } else {
+        // optional: allow image URL field if provided
+        $image_url = trim($_POST['image_url'] ?? '');
+    }
     
     // Validate required fields
-    if (empty($title) || empty($description) || empty($image_url) || empty($category)) {
-        throw new Exception('All fields are required');
+    if (empty($title) || empty($description) || empty($category)) {
+        throw new Exception('All fields except image are required');
     }
     
     // Insert new item into database
     $stmt = $pdo->prepare("INSERT INTO items (title, description, image_url, price, category) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$title, $description, $image_url, $price, $category]);
     
-    // Now update the SQL file
-    updateSQLFile($title, $description, $image_url, $price, $category);
-    
-    echo json_encode(['success' => true, 'message' => 'Product added to database and SQL file updated']);
+    echo json_encode(['success' => true, 'message' => 'Product added to database']);
     
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-}
-
-function updateSQLFile($title, $description, $image_url, $price, $category) {
-    $sqlFile = 'database_setup.sql';
-    
-    // Read the current SQL file
-    $content = file_get_contents($sqlFile);
-    
-    // Escape single quotes for SQL
-    $title = str_replace("'", "''", $title);
-    $description = str_replace("'", "''", $description);
-    $image_url = str_replace("'", "''", $image_url);
-    $category = str_replace("'", "''", $category);
-    
-    // Create the new INSERT statement
-    $newInsert = ",\n('$title', '$description', '$image_url', 0, 0, $price, '$category')";
-    
-    // Find the last VALUES entry and add the new item
-    // Look for the pattern that ends with the last item before the closing semicolon
-    $pattern = "/('Gaming Chair', 'Ergonomic chair designed for long gaming sessions', 'https:\/\/images\.unsplash\.com\/photo-1586953208448-b95a79798f07\?w=400', 134, 789, 349\.99, 'Furniture')\);/";
-    
-    if (preg_match($pattern, $content)) {
-        // Replace the last item's closing with the new item
-        $replacement = "$1" . $newInsert . ");";
-        $content = preg_replace($pattern, $replacement, $content);
-    } else {
-        // Fallback: add to the end before the final semicolon
-        $content = str_replace(");", $newInsert . ");", $content);
-    }
-    
-    // Write back to the file
-    file_put_contents($sqlFile, $content);
 }
 ?>
