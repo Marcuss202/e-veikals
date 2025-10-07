@@ -94,6 +94,11 @@ input  {
 textarea{ min-height:90px; resize:vertical; }
 input {max-width: 300px; }
 
+button[data-action="delete"] {
+    background-color: var(--danger);
+    color: white;
+}
+
 /* table and list */
 table{
   width:100%;

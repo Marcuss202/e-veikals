@@ -14,8 +14,8 @@ try {
 
     $title = trim($data['title'] ?? '');
     $description = trim($data['description'] ?? '');
-    $price = $data['price'] ?? null;
-    $category = trim($data['category'] ?? '');
+    // price not used; keep existing
+    $category = trim($data['hashtags'] ?? '');
 
     if ($title === '' || $description === '' || $category === '') throw new Exception('Missing required fields');
 
@@ -36,11 +36,11 @@ try {
     }
 
     if ($image_url !== null) {
-        $stmt = $pdo->prepare('UPDATE items SET title = ?, description = ?, image_url = ?, price = ?, category = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
-        $stmt->execute([$title, $description, $image_url, $price, $category, $id]);
+        $stmt = $pdo->prepare('UPDATE items SET title = ?, description = ?, image_url = ?, category = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
+        $stmt->execute([$title, $description, $image_url, $category, $id]);
     } else {
-        $stmt = $pdo->prepare('UPDATE items SET title = ?, description = ?, price = ?, category = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
-        $stmt->execute([$title, $description, $price, $category, $id]);
+        $stmt = $pdo->prepare('UPDATE items SET title = ?, description = ?, category = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
+        $stmt->execute([$title, $description, $category, $id]);
     }
 
     echo json_encode(['success' => true]);

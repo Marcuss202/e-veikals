@@ -11,8 +11,9 @@ try {
     // Get form data
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $price = $_POST['price'] ?? 0;
-    $category = trim($_POST['category'] ?? '');
+    // price not used for this app; keep 0
+    $price = 0;
+    $category = trim($_POST['hashtags'] ?? '');
 
     // handle file upload (optional)
     $image_url = '';
