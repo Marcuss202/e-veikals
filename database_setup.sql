@@ -23,5 +23,5 @@ INSERT INTO items (title, description, image_url, likes, views, price, category)
 ('Stylish Watch', 'Classic timepiece with modern features', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', 156, 675, 299.99, 'Accessories'),
 ('Coffee Maker', 'Professional grade espresso machine', 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400', 98, 432, 599.99, 'Home & Kitchen'),
 ('Running Shoes', 'Comfortable athletic shoes for daily wear', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', 267, 1456, 129.99, 'Fashion'),
-('Gaming Chair', 'Ergonomic chair designed for long gaming sessions', 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400', 134, 789, 349.99, 'Furniture');
+('Gaming Chair', 'Ergonomic chair designed for long gaming sessions', 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400', 134, 789, 349.99, 'Furniture'),
 ('Test', 'Test again', 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400', 0, 1, 49.99, 'Furniture');
