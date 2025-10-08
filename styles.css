@@ -275,13 +275,6 @@ a {
     overflow: hidden;
 }
 
-.item-price {
-    font-size: 20px;
-    font-weight: 700;
-    color: #007bff;
-    margin-bottom: 15px;
-}
-
 .item-category {
     display: inline-block;
     background-color: #e9ecef;

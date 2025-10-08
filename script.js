@@ -76,6 +76,11 @@ function displayItems(items) {
 
 // Create HTML for a single item card
 function createItemCard(item) {
+    // Debug: Check if item has price property
+    if ('price' in item) {
+        console.warn('Price property found in item:', item.price);
+    }
+    
     return `
         <div class="item-card" onclick="viewItem(${item.id})">
             <img src="${item.image_url}" alt="${item.title}" class="item-image" 
@@ -83,7 +88,6 @@ function createItemCard(item) {
             <div class="item-content">
                 <h3 class="item-title">${escapeHtml(item.title)}</h3>
                 <p class="item-description">${escapeHtml(item.description)}</p>
-                <div class="item-price">$${parseFloat(item.price).toFixed(2)}</div>
                 <span class="item-category">${escapeHtml(item.category)}</span>
                 <div class="item-stats">
                     <div class="stat-item likes" onclick="event.stopPropagation(); toggleLike(${item.id}, this)">

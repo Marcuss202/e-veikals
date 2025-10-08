@@ -11,8 +11,6 @@ try {
     // Get form data
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    // price not used for this app; keep 0
-    $price = 0;
     $category = trim($_POST['hashtags'] ?? '');
 
     // handle file upload (optional)
@@ -44,8 +42,8 @@ try {
     }
     
     // Insert new item into database
-    $stmt = $pdo->prepare("INSERT INTO items (title, description, image_url, price, category) VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([$title, $description, $image_url, $price, $category]);
+    $stmt = $pdo->prepare("INSERT INTO items (title, description, image_url, category) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$title, $description, $image_url, $category]);
     
     echo json_encode(['success' => true, 'message' => 'Product added to database']);
     

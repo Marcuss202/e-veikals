@@ -14,7 +14,6 @@ try {
 
     $title = trim($data['title'] ?? '');
     $description = trim($data['description'] ?? '');
-    // price not used; keep existing
     $category = trim($data['hashtags'] ?? '');
 
     if ($title === '' || $description === '' || $category === '') throw new Exception('Missing required fields');

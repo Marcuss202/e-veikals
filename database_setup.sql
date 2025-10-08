@@ -10,19 +10,27 @@ CREATE TABLE IF NOT EXISTS items (
     image_url VARCHAR(500),
     likes INT DEFAULT 0,
     views INT DEFAULT 0,
-    price DECIMAL(10, 2),
     category VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    isAdmin BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Insert sample data
-INSERT INTO items (title, description, image_url, likes, views, price, category) VALUES
-('Premium Headphones', 'High-quality wireless headphones with noise cancellation', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', 245, 1250, 199.99, 'Electronics'),
-('Modern Laptop', 'Sleek and powerful laptop for professionals', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400', 189, 890, 1299.99, 'Electronics'),
-('Stylish Watch', 'Classic timepiece with modern features', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', 156, 675, 299.99, 'Accessories'),
-('Coffee Maker', 'Professional grade espresso machine', 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400', 98, 432, 599.99, 'Home & Kitchen'),
-('Running Shoes', 'Comfortable athletic shoes for daily wear', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', 267, 1456, 129.99, 'Fashion'),
-('Gaming Chair', 'Ergonomic chair designed for long gaming sessions', 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400', 134, 789, 349.99, 'Furniture',
-('Testiiiing', 'Test Pc', 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400', 0, 0, 100.99, 'Electronics'));
-('Test', 'Test again', 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400', 0, 1, 49.99, 'Furniture');
+INSERT INTO items (title, description, image_url, likes, views, category) VALUES
+('Premium Headphones', 'High-quality wireless headphones with noise cancellation', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', 245, 1250, 'Electronics'),
+('Modern Laptop', 'Sleek and powerful laptop for professionals', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400', 189, 890, 'Electronics'),
+('Stylish Watch', 'Classic timepiece with modern features', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', 156, 675, 'Accessories');
+
+INSERT INTO users (username, email, password_hash, isAdmin) VALUES
+('admin', 'admin@example.com', '$2y$10$EIXZQ1jQ1jQ1jQ1jQ1jQ1u', TRUE),
+('user1', 'user1@example.com', '$2y$10$EIXZQ1jQ1jQ1jQ1jQ1jQ1u', FALSE);

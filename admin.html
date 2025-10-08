@@ -109,7 +109,6 @@ function showBig(item) {
   if(item.image_url){ img.src = item.image_url; img.style.display='block'; } else img.style.display='none';
   document.getElementById('bigDesc').textContent = item.description || '';
   document.getElementById('bigCategory').textContent = item.category || '';
-  document.getElementById('bigPrice').textContent = item.price ?? '';
   document.getElementById('bigLikes').textContent = item.likes ?? 0;
   document.getElementById('bigViews').textContent = item.views ?? 0;
 }
@@ -144,8 +143,7 @@ document.addEventListener('click', async (ev) => {
     editForm.elements['id'].value = item.id;
     editForm.elements['title'].value = item.title;
     editForm.elements['description'].value = item.description;
-    editForm.elements['price'].value = item.price;
-    editForm.elements['category'].value = item.category;
+    editForm.elements['hashtags'].value = item.category || '';
     editForm.elements['current_image_url'].value = item.image_url || '';
     // show edit, hide create
     document.getElementById('createCard').classList.add('hidden');
