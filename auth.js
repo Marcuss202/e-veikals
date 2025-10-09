@@ -24,6 +24,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Function to show error message
+    function showError(form, message) {
+        // Remove existing error messages
+        const existingError = form.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+
+        // Create new error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        
+        // Insert error message at the top of the form
+        form.insertBefore(errorDiv, form.firstChild);
+    }
+
     // Form validation
     const registerFormElement = document.getElementById('registerForm');
     registerFormElement.addEventListener('submit', function(e) {
@@ -32,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (password !== confirmPassword) {
             e.preventDefault();
-            alert('Passwords do not match!');
+            showError(registerForm, 'Passwords do not match!');
         }
     });
 });
