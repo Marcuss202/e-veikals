@@ -2,7 +2,7 @@
 session_start();
 
 // Check if user is logged in and is admin
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
     // User is not admin, redirect to login page
     header("Location: loginRegister.html?error=access_denied");
     exit();
@@ -44,7 +44,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['
           <div class="row"><input name="title" placeholder="Title" required></div>
           <div class="row"><textarea name="description" placeholder="Description" rows="3" required></textarea></div>
           <div class="row"><label>Image file (optional) <input type="file" name="image_file" accept="image/*"></label></div>
-          <div class="row"><input name="hashtags" placeholder="Hashtags (comma-separated)" required></div>
+          <div class="row"><input name="hashtags" placeholder="Hashtag" required></div>
           <div class="row"><button class="btn primary" type="submit">Create</button></div>
         </form>
         <div id="createMsg" class="small"></div>

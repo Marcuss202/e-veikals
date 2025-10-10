@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>E-veikals</title>
+    <link rel="stylesheet" href="product.css">
+    <title>Product Details - E-veikals</title>
 </head>
 <body>
 
@@ -15,9 +16,7 @@
                     <h2>WEBFLOW</h2>
                 </div>
                 <div class="navBarLinks">
-                    <a cass="active" href="#">Showcase</a>
-                    <a href="#">Designers</a>
-                    <a href="#">Learn & Support</a>
+                    <a href="index.html">Back to Home</a>
                 </div>
             </div>
             <div class="rightNavBar">
@@ -45,32 +44,23 @@
             </div>
         </div>
     </div>
-    <div class="secondLevelNavBlock">
-        <div class="wrapper">
-            <div class="secondLevelNavHeader">Featured Products</div>
-            <div class="secondLevelNavBarLinks" id="category-links">
-                <a href="#" data-category="all" class="active">All</a>
-                <!-- Categories will be loaded dynamically -->
-            </div>
-        </div>
-    </div>
 
     <!-- Loading indicator -->
     <div id="loading" class="loading">
         <div class="spinner"></div>
-        <p>Loading products...</p>
+        <p>Loading product...</p>
     </div>
 
-    <!-- Main content area -->
-    <main class="main-content">
+    <!-- Product detail content -->
+    <main class="product-main">
         <div class="wrapper">
-            <div id="items-grid" class="items-grid">
-                <!-- Items will be dynamically loaded here -->
+            <div class="product-container" id="product-container">
+                <!-- Product details will be loaded here -->
             </div>
         </div>
     </main>
 
-    <script src="script.js?v=4"></script>
+    <script src="product.js"></script>
     <script>
         // Check session status and update navigation
         async function updateNavigation() {
@@ -84,26 +74,22 @@
                 const usernameHeader = document.getElementById('username-display-header');
                 
                 if (session.loggedIn) {
-                    // User is logged in - hide guest nav, show user nav
                     guestNav.classList.add('hidden');
                     userNav.classList.remove('hidden');
                     usernameHeader.textContent = session.username;
                     
-                    // Show admin panel if user is admin
                     if (session.isAdmin) {
                         adminBtn.classList.remove('hidden');
                     } else {
                         adminBtn.classList.add('hidden');
                     }
                 } else {
-                    // User is not logged in - show guest nav, hide user nav
                     guestNav.classList.remove('hidden');
                     userNav.classList.add('hidden');
                     adminBtn.classList.add('hidden');
                 }
             } catch (error) {
                 console.error('Error checking session status:', error);
-                // On error, show guest navigation
                 const guestNav = document.getElementById('guest-nav');
                 const userNav = document.getElementById('user-nav');
                 guestNav.classList.remove('hidden');
@@ -122,7 +108,6 @@
                     dropdownMenu.classList.toggle('hidden');
                 });
                 
-                // Close dropdown when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!userBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
                         dropdownMenu.classList.add('hidden');

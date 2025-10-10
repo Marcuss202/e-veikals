@@ -8,6 +8,10 @@ try {
         throw new Exception('Only POST method allowed');
     }
     
+    // Debug: Log all received data
+    error_log("POST data: " . print_r($_POST, true));
+    error_log("FILES data: " . print_r($_FILES, true));
+    
     // Get form data
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
@@ -16,8 +20,12 @@ try {
     // handle file upload (optional)
     $image_url = '';
     if (!empty($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+        error_log("Processing file upload");
         $uploadsDir = __DIR__ . '/uploads';
-        if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
+        if (!is_dir($uploadsDir)) {
+            mkdir($uploadsDir, 0755, true);
+            error_log("Created uploads directory: " . $uploadsDir);
+        }
         $tmp = $_FILES['image_file']['tmp_name'];
         $name = basename($_FILES['image_file']['name']);
         // sanitize filename
@@ -26,14 +34,49 @@ try {
         $safeBase = preg_replace('/[^A-Za-z0-9-_]/', '_', $base);
         $targetName = $safeBase . '_' . time() . '.' . $ext;
         $target = $uploadsDir . '/' . $targetName;
+        
+        error_log("Moving file from $tmp to $target");
         if (!move_uploaded_file($tmp, $target)) {
+            error_log("Failed to move uploaded file from $tmp to $target");
             throw new Exception('Failed to move uploaded file');
         }
+        
+        // Set proper permissions on the uploaded file
+        chmod($target, 0644);
+        
         // accessible URL path relative to project
         $image_url = 'uploads/' . $targetName;
+        error_log("File uploaded successfully: " . $image_url);
     } else {
+        // Check for upload errors
+        if (!empty($_FILES['image_file'])) {
+            $error = $_FILES['image_file']['error'];
+            error_log("File upload error code: " . $error);
+            switch($error) {
+                case UPLOAD_ERR_INI_SIZE:
+                case UPLOAD_ERR_FORM_SIZE:
+                    error_log("File too large");
+                    break;
+                case UPLOAD_ERR_PARTIAL:
+                    error_log("File upload was interrupted");
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    error_log("No file was uploaded");
+                    break;
+                case UPLOAD_ERR_NO_TMP_DIR:
+                    error_log("Missing temporary folder");
+                    break;
+                case UPLOAD_ERR_CANT_WRITE:
+                    error_log("Failed to write file to disk");
+                    break;
+                case UPLOAD_ERR_EXTENSION:
+                    error_log("File upload stopped by extension");
+                    break;
+            }
+        }
         // optional: allow image URL field if provided
         $image_url = trim($_POST['image_url'] ?? '');
+        error_log("Using image URL: " . $image_url);
     }
     
     // Validate required fields

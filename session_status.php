@@ -7,7 +7,7 @@ $response = [
     'loggedIn' => isset($_SESSION['user_id']),
     'username' => $_SESSION['username'] ?? null,
     'email' => $_SESSION['email'] ?? null,
-    'isAdmin' => $_SESSION['is_admin'] ?? false
+    'isAdmin' => $_SESSION['isAdmin'] ?? false
 ];
 
 echo json_encode($response);

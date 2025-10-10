@@ -11,13 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-if (!isset($input['item_id'])) {
+if (!isset($input['id'])) {
     http_response_code(400);
-    echo json_encode(['error' => 'Missing item_id parameter']);
+    echo json_encode(['error' => 'Missing id parameter']);
     exit;
 }
 
-$itemId = (int)$input['item_id'];
+$itemId = (int)$input['id'];
 
 try {
     $stmt = $pdo->prepare("UPDATE items SET views = views + 1 WHERE id = ?");

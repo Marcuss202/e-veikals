@@ -203,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email'] = $user['email'];
-                $_SESSION['is_admin'] = $user['isAdmin'];
+                $_SESSION['isAdmin'] = $user['isAdmin'];
                 
                 header("Location: index.html");
                 exit();

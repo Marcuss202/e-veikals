@@ -2,29 +2,86 @@
 let allItems = [];
 let currentCategory = 'all';
 
-// Initialize the application
+// Initialize the page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    loadItems();
     setupEventListeners();
+    loadCategories();
+    loadItems();
 });
+
+// Load categories from database
+async function loadCategories() {
+    try {
+        const response = await fetch('get_categories.php');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        if (data.success && data.categories) {
+            displayCategories(data.categories);
+        } else if (data.error) {
+            throw new Error(data.error);
+        } else {
+            throw new Error('Invalid response format');
+        }
+    } catch (error) {
+        console.error('Error loading categories:', error);
+        // Fallback to default categories if loading fails
+        const defaultCategories = ['Electronics', 'Accessories'];
+        displayCategories(defaultCategories);
+    }
+}
+
+// Display categories in the navigation
+function displayCategories(categories) {
+    const categoryContainer = document.getElementById('category-links');
+    if (!categoryContainer) return;
+    
+    categoryContainer.innerHTML = '';
+    
+    // Add "All" category first
+    const allLink = document.createElement('a');
+    allLink.href = '#';
+    allLink.textContent = 'All';
+    allLink.dataset.category = 'all';
+    allLink.classList.add('active'); // Make "All" active by default
+    categoryContainer.appendChild(allLink);
+    
+    // Add categories from database
+    categories.forEach(category => {
+        if (category && category.toLowerCase() !== 'all') { // Avoid duplicate "All"
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = category;
+            link.dataset.category = category; // Keep original casing
+            categoryContainer.appendChild(link);
+        }
+    });
+}
 
 // Setup event listeners
 function setupEventListeners() {
-    // Category filter listeners
-    const categoryLinks = document.querySelectorAll('.secondLevelNavBarLinks a');
-    categoryLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+    // Category filter listeners - use event delegation since categories are loaded dynamically
+    const categoryContainer = document.getElementById('category-links');
+    
+    if (categoryContainer) {
+        categoryContainer.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Update active state
-            categoryLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Filter items
-            currentCategory = this.dataset.category;
-            filterItems(currentCategory);
+            // Check if clicked element is a category link
+            if (e.target.tagName === 'A' && e.target.dataset.category) {
+                // Update active state
+                const categoryLinks = categoryContainer.querySelectorAll('a');
+                categoryLinks.forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Filter items
+                currentCategory = e.target.dataset.category;
+                filterItems(currentCategory);
+            }
         });
-    });
+    }
 }
 
 // Load items from the database
@@ -70,6 +127,9 @@ function displayItems(items) {
     
     grid.innerHTML = items.map(item => createItemCard(item)).join('');
     
+    // Mark already liked items
+    markLikedItems();
+    
     // Add click listeners to like buttons
     setupLikeButtons();
 }
@@ -81,6 +141,8 @@ function createItemCard(item) {
         console.warn('Price property found in item:', item.price);
     }
     
+    const likedClass = item.userLiked ? 'liked' : '';
+    
     return `
         <div class="item-card" onclick="viewItem(${item.id})">
             <img src="${item.image_url}" alt="${item.title}" class="item-image" 
@@ -90,7 +152,7 @@ function createItemCard(item) {
                 <p class="item-description">${escapeHtml(item.description)}</p>
                 <span class="item-category">${escapeHtml(item.category)}</span>
                 <div class="item-stats">
-                    <div class="stat-item likes" onclick="event.stopPropagation(); toggleLike(${item.id}, this)">
+                    <div class="stat-item likes ${likedClass}" onclick="event.stopPropagation(); toggleLike(${item.id}, this)">
                         <svg class="stat-icon" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
                         </svg>
@@ -111,52 +173,117 @@ function createItemCard(item) {
 
 // Filter items by category
 function filterItems(category) {
+    console.log('Filtering by category:', category);
+    console.log('Available items:', allItems.map(item => ({ id: item.id, title: item.title, category: item.category })));
+    
     if (category === 'all') {
         displayItems(allItems);
     } else {
-        const filteredItems = allItems.filter(item => item.category === category);
+        const filteredItems = allItems.filter(item => {
+            // Case-insensitive comparison
+            return item.category.toLowerCase() === category.toLowerCase();
+        });
+        console.log('Filtered items:', filteredItems);
         displayItems(filteredItems);
     }
 }
 
 // Toggle like status
-function toggleLike(itemId, element) {
-    const likeCountSpan = element.querySelector('.like-count');
-    const currentCount = parseInt(likeCountSpan.textContent);
-    const isLiked = element.classList.contains('liked');
-    
-    if (isLiked) {
-        // Unlike
-        likeCountSpan.textContent = currentCount - 1;
-        element.classList.remove('liked');
-    } else {
-        // Like
-        likeCountSpan.textContent = currentCount + 1;
-        element.classList.add('liked');
+async function toggleLike(itemId, element) {
+    try {
+        // Check if user is logged in by checking session
+        const sessionResponse = await fetch('session_status.php');
+        const sessionData = await sessionResponse.json();
+        
+        if (!sessionData.loggedIn) {
+            alert('Please log in to like items');
+            return;
+        }
+        
+        const likeCountSpan = element.querySelector('.like-count');
+        const currentCount = parseInt(likeCountSpan.textContent);
+        const isCurrentlyLiked = element.classList.contains('liked');
+        
+        const action = isCurrentlyLiked ? 'unlike' : 'like';
+        
+        // Update UI immediately for better UX
+        if (action === 'like') {
+            likeCountSpan.textContent = currentCount + 1;
+            element.classList.add('liked');
+        } else {
+            likeCountSpan.textContent = currentCount - 1;
+            element.classList.remove('liked');
+        }
+        
+        // Update database
+        const response = await fetch('update_likes.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: itemId, action: action })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update with actual count from database
+            likeCountSpan.textContent = data.likes;
+            
+            // Update visual state based on server response
+            if (data.userLiked) {
+                element.classList.add('liked');
+            } else {
+                element.classList.remove('liked');
+            }
+        } else {
+            // Revert UI changes if database update failed
+            if (action === 'like') {
+                likeCountSpan.textContent = currentCount;
+                element.classList.remove('liked');
+            } else {
+                likeCountSpan.textContent = currentCount;
+                element.classList.add('liked');
+            }
+            
+            if (data.error) {
+                console.error('Like error:', data.error);
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error updating likes:', error);
+        // Revert UI changes on error
+        const likeCountSpan = element.querySelector('.like-count');
+        const currentCount = parseInt(likeCountSpan.textContent);
+        const isCurrentlyLiked = element.classList.contains('liked');
+        
+        if (isCurrentlyLiked) {
+            likeCountSpan.textContent = currentCount - 1;
+            element.classList.remove('liked');
+        } else {
+            likeCountSpan.textContent = currentCount + 1;
+            element.classList.add('liked');
+        }
     }
-    
-    // Here you could also send an AJAX request to update the database
-    // updateLikeInDatabase(itemId, !isLiked);
 }
 
-// View item details (placeholder function)
+// View item details
 function viewItem(itemId) {
-    // Update view count
-    const item = allItems.find(item => item.id === itemId);
-    if (item) {
-        item.views++;
-        // Here you could send an AJAX request to update views in database
-        // updateViewsInDatabase(itemId);
-    }
-    
-    // For now, just show an alert - you could implement a modal or redirect to detail page
-    alert(`Viewing item: ${item ? item.title : 'Unknown'}`);
+    // Redirect to product detail page
+    window.location.href = `product.html?id=${itemId}`;
 }
 
 // Setup like button event listeners
 function setupLikeButtons() {
     // Event listeners are handled inline in the HTML for simplicity
     // In a larger app, you might want to use event delegation
+}
+
+// Mark already liked items
+function markLikedItems() {
+    // This function is no longer needed since we get the liked status from the database
+    // The liked status is now included in the item data from get_items.php
 }
 
 // Utility functions
