@@ -31,6 +31,7 @@
             <!-- Login Form -->
             <div class="auth-form" id="login-form">
                 <h2>Welcome Back</h2>
+                <div id="error-message" class="error-message"></div>
                 <form id="loginForm" action="auth.php" method="POST">
                     <input type="hidden" name="action" value="login">
                     <div class="form-group">
@@ -46,6 +47,7 @@
             <!-- Register Form -->
             <div class="auth-form hidden" id="register-form">
                 <h2>Create Account</h2>
+                <div id="register-error-message" class="error-message"></div>
                 <form id="registerForm" action="auth.php" method="POST">
                     <input type="hidden" name="action" value="register">
                     <div class="form-group">
@@ -67,5 +69,78 @@
     </div>
 
     <script src="auth.js"></script>
+    <script>
+        // Check for error or success messages in URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            const success = urlParams.get('success');
+            const action = urlParams.get('action'); // We'll add this to track which form the error came from
+            const loginErrorMessage = document.getElementById('error-message');
+            const registerErrorMessage = document.getElementById('register-error-message');
+            
+            if (error === 'access_denied') {
+                // Always show access denied on login form
+                loginErrorMessage.textContent = 'Access denied. Admin privileges required.';
+                loginErrorMessage.style.display = 'block';
+            } else if (error) {
+                // Check if the error came from registration by looking at the referrer or form data
+                // If it's a registration error (contains registration-specific terms), show on register form
+                const isRegistrationError = error.includes('Username') || 
+                                          error.includes('already registered') || 
+                                          error.includes('already taken') || 
+                                          error.includes('Registration failed') ||
+                                          error.includes('Password must') ||
+                                          error.includes('confirm') ||
+                                          error.includes('match');
+                
+                if (isRegistrationError) {
+                    // Switch to register tab and show error there
+                    const loginTab = document.querySelector('.tab-btn[data-tab="login"]');
+                    const registerTab = document.querySelector('.tab-btn[data-tab="register"]');
+                    const loginForm = document.getElementById('login-form');
+                    const registerForm = document.getElementById('register-form');
+                    
+                    // Switch to register tab
+                    loginTab.classList.remove('active');
+                    registerTab.classList.add('active');
+                    loginForm.classList.add('hidden');
+                    registerForm.classList.remove('hidden');
+                    
+                    // Show error on register form
+                    registerErrorMessage.textContent = decodeURIComponent(error);
+                    registerErrorMessage.style.display = 'block';
+                } else {
+                    // Show on login form
+                    loginErrorMessage.textContent = decodeURIComponent(error);
+                    loginErrorMessage.style.display = 'block';
+                }
+            }
+            
+            if (success) {
+                // Show success message on login form and switch to login tab
+                const loginTab = document.querySelector('.tab-btn[data-tab="login"]');
+                const registerTab = document.querySelector('.tab-btn[data-tab="register"]');
+                const loginForm = document.getElementById('login-form');
+                const registerForm = document.getElementById('register-form');
+                
+                // Switch to login tab
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                
+                // Create success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                successDiv.textContent = decodeURIComponent(success);
+                successDiv.style.display = 'block';
+                
+                // Insert after h2 in login form
+                const loginH2 = loginForm.querySelector('h2');
+                loginH2.insertAdjacentElement('afterend', successDiv);
+            }
+        });
+    </script>
 </body>
 </html>

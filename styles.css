@@ -113,18 +113,20 @@ a {
 
 .rightNavBar {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     align-items: center;
+    height: 100%;
 }
 
 .rightNavBar a {
     color: white;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 6px;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .rightNavBar a:first-child {
@@ -145,6 +147,108 @@ a {
 .rightNavBar a:last-child:hover {
     background-color: #0056b3;
     border-color: #0056b3;
+}
+
+/* Navigation sections */
+.nav-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 100%;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Admin panel button */
+.admin-btn {
+    background-color: #dc3545 !important;
+    color: white !important;
+    border: 1px solid #dc3545 !important;
+    font-size: 13px !important;
+    padding: 6px 12px !important;
+    font-weight: 600 !important;
+}
+
+.admin-btn:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+/* User dropdown */
+.user-dropdown {
+    position: relative;
+}
+
+.user-account-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+}
+
+.user-account-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.user-account-btn svg {
+    flex-shrink: 0;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+    z-index: 1000;
+    margin-top: 8px;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.username-header {
+    font-weight: 600;
+    color: #495057 !important;
+    background-color: #f8f9fa !important;
+}
+
+.username-header:hover {
+    background-color: #f8f9fa !important;
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+    border: none;
+    border-top: 1px solid #e9ecef;
 }
 
 /* Responsive design */

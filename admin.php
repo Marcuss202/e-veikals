@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Check if user is logged in and is admin
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
+    // User is not admin, redirect to login page
+    header("Location: loginRegister.html?error=access_denied");
+    exit();
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,6 +20,7 @@
   <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;">
     <h1 style="margin:0;">Admin panel</h1>
     <div>
+      <a href="index.html" class="btn" style="background: #6c757d; margin-right: 10px;">← Back to Site</a>
       <button id="showCreateBtn" class="btn">Create NEW</button>
     </div>
   </div>

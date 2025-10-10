@@ -21,7 +21,27 @@
                 </div>
             </div>
             <div class="rightNavBar">
-                <a href="loginRegister.html">Log in / Sign up</a>
+                <!-- Default login/signup (shown when not logged in) -->
+                <div id="guest-nav" class="nav-section">
+                    <a href="loginRegister.html">Log in / Sign up</a>
+                </div>
+                
+                <!-- User navigation (shown when logged in) -->
+                <div id="user-nav" class="nav-section hidden">
+                    <a href="admin.php" id="admin-panel-btn" class="admin-btn hidden">Admin Panel</a>
+                    <div class="user-dropdown">
+                        <button class="user-account-btn" id="user-account-btn">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu hidden" id="user-dropdown-menu">
+                            <div class="dropdown-item username-header" id="username-display-header"></div>
+                            <hr class="dropdown-divider">
+                            <a href="logout.php" class="dropdown-item">Logout</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -53,5 +73,71 @@
     </main>
 
     <script src="script.js?v=2"></script>
+    <script>
+        // Check session status and update navigation
+        async function updateNavigation() {
+            try {
+                const response = await fetch('session_status.php');
+                const session = await response.json();
+                
+                const guestNav = document.getElementById('guest-nav');
+                const userNav = document.getElementById('user-nav');
+                const adminBtn = document.getElementById('admin-panel-btn');
+                const usernameHeader = document.getElementById('username-display-header');
+                
+                if (session.loggedIn) {
+                    // User is logged in - hide guest nav, show user nav
+                    guestNav.classList.add('hidden');
+                    userNav.classList.remove('hidden');
+                    usernameHeader.textContent = session.username;
+                    
+                    // Show admin panel if user is admin
+                    if (session.isAdmin) {
+                        adminBtn.classList.remove('hidden');
+                    } else {
+                        adminBtn.classList.add('hidden');
+                    }
+                } else {
+                    // User is not logged in - show guest nav, hide user nav
+                    guestNav.classList.remove('hidden');
+                    userNav.classList.add('hidden');
+                    adminBtn.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error checking session status:', error);
+                // On error, show guest navigation
+                const guestNav = document.getElementById('guest-nav');
+                const userNav = document.getElementById('user-nav');
+                guestNav.classList.remove('hidden');
+                userNav.classList.add('hidden');
+            }
+        }
+        
+        // Setup dropdown functionality
+        function setupUserDropdown() {
+            const userBtn = document.getElementById('user-account-btn');
+            const dropdownMenu = document.getElementById('user-dropdown-menu');
+            
+            if (userBtn && dropdownMenu) {
+                userBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+            }
+        }
+        
+        // Initialize navigation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigation();
+            setupUserDropdown();
+        });
+    </script>
 </body>
 </html>
