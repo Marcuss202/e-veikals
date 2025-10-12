@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // If there are validation errors, return them
         if (!empty($errors)) {
             $errorMessage = implode('. ', $errors);
-            header("Location: loginRegister.html?error=" . urlencode($errorMessage));
+            header("Location: ../views/loginRegister.html?error=" . urlencode($errorMessage));
             exit();
         }
         
@@ -128,9 +128,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             if ($existingUser) {
                 if ($existingUser['email'] === $email) {
-                    header("Location: loginRegister.html?error=" . urlencode("Email address is already registered"));
+                    header("Location: ../views/loginRegister.html?error=" . urlencode("Email address is already registered"));
                 } else {
-                    header("Location: loginRegister.html?error=" . urlencode("Username is already taken"));
+                    header("Location: ../views/loginRegister.html?error=" . urlencode("Username is already taken"));
                 }
                 exit();
             }
@@ -145,14 +145,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($result) {
                 $userId = $pdo->lastInsertId();
                 if ($userId > 0) {
-                    header("Location: loginRegister.html?success=" . urlencode("Registration successful! Please login with your credentials."));
+                    header("Location: ../views/loginRegister.html?success=" . urlencode("Registration successful! Please login with your credentials."));
                     exit();
                 } else {
-                    header("Location: loginRegister.html?error=" . urlencode("Registration failed. Please try again."));
+                    header("Location: ../views/loginRegister.html?error=" . urlencode("Registration failed. Please try again."));
                     exit();
                 }
             } else {
-                header("Location: loginRegister.html?error=" . urlencode("Registration failed. Please try again."));
+                header("Location: ../views/loginRegister.html?error=" . urlencode("Registration failed. Please try again."));
                 exit();
             }
         } catch(PDOException $e) {
@@ -160,9 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             // Check for specific database errors
             if ($e->getCode() == 23000) {
-                header("Location: loginRegister.html?error=" . urlencode("Email or username already exists"));
+                header("Location: ../views/loginRegister.html?error=" . urlencode("Email or username already exists"));
             } else {
-                header("Location: loginRegister.html?error=" . urlencode("Database error occurred. Please try again."));
+                header("Location: ../views/loginRegister.html?error=" . urlencode("Database error occurred. Please try again."));
             }
             exit();
         }
@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // If there are validation errors, return them
         if (!empty($errors)) {
             $errorMessage = implode('. ', $errors);
-            header("Location: loginRegister.html?error=" . urlencode($errorMessage));
+            header("Location: ../views/loginRegister.html?error=" . urlencode($errorMessage));
             exit();
         }
         
@@ -205,15 +205,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['isAdmin'] = $user['isAdmin'];
                 
-                header("Location: index.html");
+                header("Location: ../index.html");
                 exit();
             } else {
-                header("Location: loginRegister.html?error=" . urlencode("Invalid email or password. Please check your credentials and try again."));
+                header("Location: ../views/loginRegister.html?error=" . urlencode("Invalid email or password. Please check your credentials and try again."));
                 exit();
             }
         } catch(PDOException $e) {
             error_log('Login error: ' . $e->getMessage());
-            header("Location: loginRegister.html?error=" . urlencode("Database error occurred. Please try again."));
+            header("Location: ../views/loginRegister.html?error=" . urlencode("Database error occurred. Please try again."));
             exit();
         }
     }

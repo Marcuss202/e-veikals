@@ -26,7 +26,7 @@ async function loadProduct() {
         showLoading();
         
         // Load product details
-        const response = await fetch(`get_items.php?id=${productId}`);
+        const response = await fetch(`../api/get_items.php?id=${productId}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -59,7 +59,7 @@ function displayProduct(product) {
     
     container.innerHTML = `
         <div style="grid-column: 1 / -1; margin-bottom: 20px;">
-            <a href="index.html" class="back-btn">
+            <a href="../index.html" class="back-btn">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                 </svg>
@@ -131,7 +131,7 @@ function markLikedItem(product) {
 async function toggleLike(productId) {
     try {
         // Check if user is logged in
-        const sessionResponse = await fetch('session_status.php');
+        const sessionResponse = await fetch('../api/session_status.php');
         const sessionData = await sessionResponse.json();
         
         if (!sessionData.loggedIn) {
@@ -156,7 +156,7 @@ async function toggleLike(productId) {
         }
         
         // Update database
-        const response = await fetch('update_likes.php', {
+        const response = await fetch('../api/update_likes.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ async function updateViews(productId) {
         sessionStorage.setItem('viewedProducts', JSON.stringify(viewedProducts));
         
         // Update view count in database
-        const response = await fetch('update_views.php', {
+        const response = await fetch('../api/update_views.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -263,7 +263,7 @@ function shareProduct() {
 
 // Navigate to another product
 function goToProduct(productId) {
-    window.location.href = `product.html?id=${productId}`;
+    window.location.href = `../views/product.html?id=${productId}`;
 }
 
 // Utility functions

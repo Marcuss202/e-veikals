@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="product.css">
+    <link rel="stylesheet" href="../assets/styles/styles.css">
+    <link rel="stylesheet" href="../assets/styles/product.css">
     <title>Product Details - E-veikals</title>
 </head>
 <body>
@@ -16,18 +16,18 @@
                     <h2>WEBFLOW</h2>
                 </div>
                 <div class="navBarLinks">
-                    <a href="index.html">Back to Home</a>
+                    <a href="../index.html">Back to Home</a>
                 </div>
             </div>
             <div class="rightNavBar">
                 <!-- Default login/signup (shown when not logged in) -->
                 <div id="guest-nav" class="nav-section">
-                    <a href="loginRegister.html">Log in / Sign up</a>
+                    <a href="../loginRegister.html">Log in / Sign up</a>
                 </div>
                 
                 <!-- User navigation (shown when logged in) -->
                 <div id="user-nav" class="nav-section hidden">
-                    <a href="admin.php" id="admin-panel-btn" class="admin-btn hidden">Admin Panel</a>
+                    <a href="../api/admin.php" id="admin-panel-btn" class="admin-btn hidden">Admin Panel</a>
                     <div class="user-dropdown">
                         <button class="user-account-btn" id="user-account-btn">
                             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
                         <div class="dropdown-menu hidden" id="user-dropdown-menu">
                             <div class="dropdown-item username-header" id="username-display-header"></div>
                             <hr class="dropdown-divider">
-                            <a href="logout.php" class="dropdown-item">Logout</a>
+                            <a href="../api/logout.php" class="dropdown-item">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -60,12 +60,12 @@
         </div>
     </main>
 
-    <script src="product.js"></script>
+    <script src="../assets/scripts/product.js"></script>
     <script>
         // Check session status and update navigation
         async function updateNavigation() {
             try {
-                const response = await fetch('session_status.php');
+                const response = await fetch('../api/session_status.php');
                 const session = await response.json();
                 
                 const guestNav = document.getElementById('guest-nav');

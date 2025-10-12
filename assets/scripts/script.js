@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load categories from database
 async function loadCategories() {
     try {
-        const response = await fetch('get_categories.php');
+        const response = await fetch('api/get_categories.php');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -88,7 +88,7 @@ function setupEventListeners() {
 async function loadItems() {
     try {
         showLoading();
-        const response = await fetch('get_items.php');
+        const response = await fetch('api/get_items.php');
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -136,10 +136,6 @@ function displayItems(items) {
 
 // Create HTML for a single item card
 function createItemCard(item) {
-    // Debug: Check if item has price property
-    if ('price' in item) {
-        console.warn('Price property found in item:', item.price);
-    }
     
     const likedClass = item.userLiked ? 'liked' : '';
     
@@ -172,19 +168,41 @@ function createItemCard(item) {
 }
 
 // Filter items by category
-function filterItems(category) {
-    console.log('Filtering by category:', category);
-    console.log('Available items:', allItems.map(item => ({ id: item.id, title: item.title, category: item.category })));
-    
-    if (category === 'all') {
+// Filter items by category (server-side)
+async function filterItems(category) {
+    try {
+        showLoading();
+        
+        // Fetch filtered items from server
+        const url = category === 'all' ? 'api/get_items.php' : `api/get_items.php?category=${encodeURIComponent(category)}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        allItems = data; // Update the global array
         displayItems(allItems);
-    } else {
-        const filteredItems = allItems.filter(item => {
-            // Case-insensitive comparison
-            return item.category.toLowerCase() === category.toLowerCase();
-        });
-        console.log('Filtered items:', filteredItems);
-        displayItems(filteredItems);
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Error filtering items:', error);
+        hideLoading();
+        // Fallback to client-side filtering if server-side fails
+        if (category === 'all') {
+            displayItems(allItems);
+        } else {
+            const filteredItems = allItems.filter(item => {
+                return item.category && item.category.toLowerCase() === category.toLowerCase();
+            });
+            displayItems(filteredItems);
+        }
     }
 }
 
@@ -192,7 +210,7 @@ function filterItems(category) {
 async function toggleLike(itemId, element) {
     try {
         // Check if user is logged in by checking session
-        const sessionResponse = await fetch('session_status.php');
+        const sessionResponse = await fetch('api/session_status.php');
         const sessionData = await sessionResponse.json();
         
         if (!sessionData.loggedIn) {
@@ -216,7 +234,7 @@ async function toggleLike(itemId, element) {
         }
         
         // Update database
-        const response = await fetch('update_likes.php', {
+        const response = await fetch('api/update_likes.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -271,7 +289,7 @@ async function toggleLike(itemId, element) {
 // View item details
 function viewItem(itemId) {
     // Redirect to product detail page
-    window.location.href = `product.html?id=${itemId}`;
+    window.location.href = `./views/product.html?id=${itemId}`;
 }
 
 // Setup like button event listeners
@@ -313,5 +331,3 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
-
-console.log("E-veikals application loaded successfully!");

@@ -1,4 +1,5 @@
-☐ make likes only work when logged in, and keep track of which user liked what (new table user_likes with user_id and item_id)
-☐ Preview page for any item when clicked on (modal or new page)
-☐ 2nd level category with auto categorys
+TO DO TILL MONDAY:
 ☐ 1st nav bar with Designers and Learn & support pages
+☐ Admin panel (user managment + admin privileges)
+☐ Likes table in DB
+☐ Test password hacking

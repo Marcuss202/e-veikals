@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'connect.php';
+include '../config/connect.php';
 
 try {
     // Check if requesting a single item

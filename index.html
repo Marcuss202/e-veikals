@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+     <script src="./assets/scripts/script.js?v=3"></script>  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/styles/styles.css">
     <title>E-veikals</title>
 </head>
 <body>
@@ -23,12 +23,12 @@
             <div class="rightNavBar">
                 <!-- Default login/signup (shown when not logged in) -->
                 <div id="guest-nav" class="nav-section">
-                    <a href="loginRegister.html">Log in / Sign up</a>
+                    <a href="./views/loginRegister.html">Log in / Sign up</a>
                 </div>
                 
                 <!-- User navigation (shown when logged in) -->
                 <div id="user-nav" class="nav-section hidden">
-                    <a href="admin.php" id="admin-panel-btn" class="admin-btn hidden">Admin Panel</a>
+                    <a href="./api/admin.php" id="admin-panel-btn" class="admin-btn hidden">Admin Panel</a>
                     <div class="user-dropdown">
                         <button class="user-account-btn" id="user-account-btn">
                             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@
                         <div class="dropdown-menu hidden" id="user-dropdown-menu">
                             <div class="dropdown-item username-header" id="username-display-header"></div>
                             <hr class="dropdown-divider">
-                            <a href="logout.php" class="dropdown-item">Logout</a>
+                            <a href="api/logout.php" class="dropdown-item">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -70,12 +70,12 @@
         </div>
     </main>
 
-    <script src="script.js?v=4"></script>
+    <script src="./assets/scripts/script.js?v=7"></script>
     <script>
         // Check session status and update navigation
         async function updateNavigation() {
             try {
-                const response = await fetch('session_status.php');
+                const response = await fetch('api/session_status.php');
                 const session = await response.json();
                 
                 const guestNav = document.getElementById('guest-nav');

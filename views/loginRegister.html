@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login / Register - E-veikals</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="loginRegister.css">
+    <link rel="stylesheet" href="../assets/styles/styles.css">
+    <link rel="stylesheet" href="../assets/styles/loginRegister.css">
 </head>
 <body>
     <div class="mainNavBarBlock">
@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="rightNavBar">
-                <a href="index.html">Back to Home</a>
+                <a href="../index.html">Back to Home</a>
             </div>
         </div>
     </div>
@@ -32,7 +32,7 @@
             <div class="auth-form" id="login-form">
                 <h2>Welcome Back</h2>
                 <div id="error-message" class="error-message"></div>
-                <form id="loginForm" action="auth.php" method="POST">
+                <form id="loginForm" action="../api/auth.php" method="POST">
                     <input type="hidden" name="action" value="login">
                     <div class="form-group">
                         <input type="email" name="email" placeholder="Email" required>
@@ -48,7 +48,7 @@
             <div class="auth-form hidden" id="register-form">
                 <h2>Create Account</h2>
                 <div id="register-error-message" class="error-message"></div>
-                <form id="registerForm" action="auth.php" method="POST">
+                <form id="registerForm" action="../api/auth.php" method="POST">
                     <input type="hidden" name="action" value="register">
                     <div class="form-group">
                         <input type="text" name="username" placeholder="Username" required>
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <script src="auth.js"></script>
+    <script src="../assets/scripts/auth.js"></script>
     <script>
         // Check for error or success messages in URL
         document.addEventListener('DOMContentLoaded', function() {

@@ -4,7 +4,7 @@ session_start();
 // Check if user is logged in and is admin
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['isAdmin']) || $_SESSION['isAdmin'] != 1) {
     // User is not admin, redirect to login page
-    header("Location: loginRegister.html?error=access_denied");
+    header("Location: ../views/loginRegister.html?error=access_denied");
     exit();
 }
 ?>
@@ -14,13 +14,13 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['isAdmin']) || $_SESSION['i
   <meta charset="utf-8" />
   <title>Admin - e-veikals</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="../assets/styles/admin.css">
 </head>
 <body>
   <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;">
     <h1 style="margin:0;">Admin panel</h1>
     <div>
-      <a href="index.html" class="btn" style="background: #6c757d; margin-right: 10px;">← Back to Site</a>
+      <a href="../../index.html" class="btn" style="background: #6c757d; margin-right: 10px;">← Back to Site</a>
       <button id="showCreateBtn" class="btn">Create NEW</button>
     </div>
   </div>

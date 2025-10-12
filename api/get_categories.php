@@ -1,5 +1,5 @@
 <?php
-include 'connect.php';
+include '../config/connect.php';
 
 header('Content-Type: application/json');
 
