@@ -173,3 +173,30 @@ td a, td span { display:inline-block; max-width: 260px; white-space:nowrap; over
   .left{ width:100%; }
   td a, td span { max-width: 140px; }
 }
+
+/* Admin checkbox styling: larger, clearer, green when checked */
+input[type="checkbox"][data-action="admin-checkbox"]{
+  width:20px;
+  height:20px;
+  margin:0;
+  vertical-align:middle;
+  cursor:pointer;
+  /* modern browsers support accent-color to change the checkbox color */
+  accent-color: var(--success);
+  /* slight scale to make it easier to click */
+  transform: scale(1.15);
+  transition: box-shadow 150ms ease, transform 120ms ease, opacity 150ms ease;
+}
+
+input[type="checkbox"][data-action="admin-checkbox"]:checked{
+  /* subtle glow to emphasize admin users */
+  box-shadow: 0 0 0 6px rgba(16,185,129,0.08);
+}
+
+input[type="checkbox"][data-action="admin-checkbox"][disabled]{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+/* make the Actions cell a little tighter so controls align visually */
+tbody td.actions{ white-space:nowrap; }

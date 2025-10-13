@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/styles/styles.css">
+    <title>Designers - E-veikals</title>
+</head>
+<body>
+    <div class="mainNavBarBlock">
+        <div class="wrapper">
+            <div class="leftNavBar">
+                <div class="logo">
+                    <h2>WEBFLOW</h2>
+                </div>
+                <div class="navBarLinks">
+                    <a href="../index.html" class="active">Showcase</a>
+                    <a href="designers.html">Designers</a>
+                    <a href="learn_support.html">Learn & Support</a>
+                </div>
+            </div>
+            <div class="rightNavBar">
+                <div id="guest-nav" class="nav-section">
+                    <a href="../views/loginRegister.html">Log in / Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="wrapper">
+            <h1>Designers</h1>
+            <p>This is a simple Designers page. Add designer profiles or links here.</p>
+
+            <div class="designer-list">
+                <div class="designer-card"> 
+                    <h3>Designer One</h3>
+                    <p>Short bio or link to portfolio.</p>
+                </div>
+                <div class="designer-card"> 
+                    <h3>Designer Two</h3>
+                    <p>Short bio or link to portfolio.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function updateNavigation() {
+            try {
+                const response = await fetch('../api/session_status.php');
+                const session = await response.json();
+
+                const guestNav = document.getElementById('guest-nav');
+                // create user-nav container if not present
+                let userNav = document.getElementById('user-nav');
+                if (!userNav) {
+                    userNav = document.createElement('div');
+                    userNav.id = 'user-nav';
+                    userNav.className = 'nav-section hidden';
+                    document.querySelector('.rightNavBar').appendChild(userNav);
+                }
+
+                if (session.loggedIn) {
+                    guestNav.classList.add('hidden');
+                    userNav.classList.remove('hidden');
+                    userNav.innerHTML = `<div class="user-dropdown">
+                        <button class="user-account-btn" id="user-account-btn">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu hidden" id="user-dropdown-menu">
+                            <div class="dropdown-item username-header" id="username-display-header"></div>
+                            <hr class="dropdown-divider">
+                            <a href="api/logout.php" class="dropdown-item">Logout</a>
+                        </div>
+                    </div>`;
+                } else {
+                    guestNav.classList.remove('hidden');
+                    userNav.classList.add('hidden');
+                }
+            } catch (e) {
+                console.error('Session check failed', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateNavigation);
+    </script>
+
+</body>
+</html>

@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['isAdmin']) || $_SESSION['i
   <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;">
     <h1 style="margin:0;">Admin panel</h1>
     <div>
-      <a href="../../index.html" class="btn" style="background: #6c757d; margin-right: 10px;">← Back to Site</a>
+      <a href="../index.html" class="btn" style="background: #6c757d; margin-right: 10px;">← Back to Site</a>
       <button id="showCreateBtn" class="btn">Create NEW</button>
     </div>
   </div>
@@ -32,7 +32,6 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['isAdmin']) || $_SESSION['i
         <h2 id="bigTitle">No item selected</h2>
         <p id="bigDesc"></p>
         <div class="small">Category: <span id="bigCategory"></span></div>
-  <!-- price removed - using hashtags instead -->
         <div class="small">Likes: <span id="bigLikes"></span> · Views: <span id="bigViews"></span></div>
       </div>
 
@@ -81,6 +80,13 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['isAdmin']) || $_SESSION['i
       </div>
 
       <div style="height:12px;"></div>
+      <div class="card" id="usersCard">
+        <h3>Users</h3>
+        <table id="usersTable">
+          <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Admin</th><th>Actions</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -134,6 +140,45 @@ async function reload() {
   }
 }
 
+// Users management
+// expose current user id to client-side JS so we can disable self-actions
+const currentUserId = <?php echo json_encode($_SESSION['user_id']); ?>;
+
+async function fetchUsers() {
+  const res = await fetch(apiBase + 'get_users.php');
+  if(!res.ok) throw new Error('Failed to fetch users');
+  return res.json();
+}
+
+function renderUsers(users) {
+  const tbody = document.querySelector('#usersTable tbody');
+  tbody.innerHTML = '';
+  users.forEach(u => {
+    const tr = document.createElement('tr');
+    // Disable checkbox and delete button for the current logged-in user
+    const disabledAttr = (u.id == currentUserId) ? 'disabled' : '';
+    const checkboxChecked = u.isAdmin == 1 ? 'checked' : '';
+    tr.innerHTML = `
+      <td>${u.id}</td>
+      <td>${escapeHtml(u.username)}</td>
+      <td>${escapeHtml(u.email)}</td>
+      <td><input type="checkbox" data-action="admin-checkbox" data-id="${u.id}" ${checkboxChecked} ${disabledAttr}></td>
+      <td class="actions">
+        <button class="btn danger" data-action="delete-user" data-id="${u.id}" ${disabledAttr}>Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function reloadUsers() {
+  try {
+    const users = await fetchUsers();
+    renderUsers(users);
+  } catch (e) {
+    console.error('Error loading users', e);
+  }
+}
+
 document.addEventListener('click', async (ev) => {
   const a = ev.target.closest('a.select');
   if(a){ ev.preventDefault(); const id = a.dataset.id; const items = await fetchItems(); const item = items.find(x=>x.id==id); showBig(item); return; }
@@ -162,6 +207,40 @@ document.addEventListener('click', async (ev) => {
     document.getElementById('editId').textContent = item.id;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Users actions
+  if(btn.dataset.action === 'toggle-admin'){
+    const uid = btn.dataset.id;
+    const makeAdmin = btn.textContent.includes('Make Admin');
+    if(!confirm((makeAdmin ? 'Grant' : 'Revoke') + ' admin for user ' + uid + '?')) return;
+    const res = await fetch(apiBase + 'update_user.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: uid, isAdmin: makeAdmin }) });
+    const json = await res.json();
+    if(json.success) reloadUsers(); else alert('Update failed');
+  }
+
+  if(btn.dataset.action === 'delete-user'){
+    const uid = btn.dataset.id;
+    if(!confirm('Delete user ' + uid + '?')) return;
+    const res = await fetch(apiBase + 'delete_user.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: uid }) });
+    const json = await res.json();
+    if(json.success) reloadUsers(); else alert('Delete failed');
+  }
+});
+
+// Delegated handler for admin checkbox changes
+document.querySelector('#usersTable').addEventListener('change', async (ev) => {
+  const cb = ev.target.closest('input[data-action="admin-checkbox"]');
+  if(!cb) return;
+  const uid = cb.dataset.id;
+  const isAdmin = cb.checked ? 1 : 0;
+  if(!confirm((isAdmin ? 'Grant' : 'Revoke') + ' admin for user ' + uid + '?')) {
+    // revert checkbox
+    cb.checked = !cb.checked;
+    return;
+  }
+  const res = await fetch(apiBase + 'update_user.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: uid, isAdmin }) });
+  const json = await res.json();
+  if(!json.success) { alert('Update failed'); reloadUsers(); }
 });
 
 document.getElementById('createForm').addEventListener('submit', async (e) => {
@@ -198,6 +277,7 @@ document.getElementById('showCreateBtn').addEventListener('click', () => {
 });
 
 reload();
+reloadUsers();
 </script>
 </body>
 </html>

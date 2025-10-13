@@ -149,6 +149,43 @@ a {
     border-color: #0056b3;
 }
 
+.filterRow {
+    display: flex;
+    gap: 20px;
+}
+
+/* Keep filterRow aligned with the items grid inside the wrapper */
+.main-content .wrapper > .filterRow {
+    max-width: 1200px;
+    margin: 0 auto 10px auto; /* center and add a small bottom gap */
+    padding: 0 20px; /* match items-grid horizontal padding */
+}
+
+/* Filter buttons (Recent / Most Liked / Most Viewed) */
+.filterSettings {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filterSettings:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.filterSettings.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
 /* Navigation sections */
 .nav-section {
     display: flex;
@@ -507,6 +544,68 @@ a {
 
 .stat-item.likes.liked .stat-icon {
     color: white;
+}
+
+/* Simple page improvements for Designers & Learn pages */
+.main-content .wrapper h1 {
+    font-size: 32px;
+    padding-left: 32px;
+    margin-bottom: 12px;
+    color: #222;
+}
+
+.main-content .wrapper p {
+    color: #555;
+    margin-bottom: 18px;
+    padding-left: 32px;
+    line-height: 1.6;
+}
+
+.designer-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.designer-card {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.designer-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.designer-card p {
+    margin: 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.designer-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+}
+
+main .wrapper section {
+    background: #fff;
+    padding: 16px;
+    /* padding-left: 32px; */
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+    margin-top: 18px;
+}
+
+/* Small screens: tighten spacing */
+@media (max-width: 600px) {
+    .main-content .wrapper h1 { font-size: 24px; }
+    .designer-list { gap: 12px; }
 }
 
 /* Shake animation for already liked items */

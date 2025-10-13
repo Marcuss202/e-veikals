@@ -1,84 +1,35 @@
 // Global variables
 let allItems = [];
-let currentCategory = 'all';
 
 // Initialize the page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
-    loadCategories();
     loadItems();
+    setupFilterButtons();
 });
 
-// Load categories from database
-async function loadCategories() {
-    try {
-        const response = await fetch('api/get_categories.php');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        
-        if (data.success && data.categories) {
-            displayCategories(data.categories);
-        } else if (data.error) {
-            throw new Error(data.error);
-        } else {
-            throw new Error('Invalid response format');
-        }
-    } catch (error) {
-        console.error('Error loading categories:', error);
-        // Fallback to default categories if loading fails
-        const defaultCategories = ['Electronics', 'Accessories'];
-        displayCategories(defaultCategories);
-    }
-}
-
-// Display categories in the navigation
-function displayCategories(categories) {
-    const categoryContainer = document.getElementById('category-links');
-    if (!categoryContainer) return;
-    
-    categoryContainer.innerHTML = '';
-    
-    // Add "All" category first
-    const allLink = document.createElement('a');
-    allLink.href = '#';
-    allLink.textContent = 'All';
-    allLink.dataset.category = 'all';
-    allLink.classList.add('active'); // Make "All" active by default
-    categoryContainer.appendChild(allLink);
-    
-    // Add categories from database
-    categories.forEach(category => {
-        if (category && category.toLowerCase() !== 'all') { // Avoid duplicate "All"
-            const link = document.createElement('a');
-            link.href = '#';
-            link.textContent = category;
-            link.dataset.category = category; // Keep original casing
-            categoryContainer.appendChild(link);
-        }
-    });
-}
 
 // Setup event listeners
 function setupEventListeners() {
-    // Category filter listeners - use event delegation since categories are loaded dynamically
+    // Category filter listeners (second-level nav)
     const categoryContainer = document.getElementById('category-links');
-    
     if (categoryContainer) {
         categoryContainer.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Check if clicked element is a category link
-            if (e.target.tagName === 'A' && e.target.dataset.category) {
-                // Update active state
-                const categoryLinks = categoryContainer.querySelectorAll('a');
-                categoryLinks.forEach(l => l.classList.remove('active'));
-                e.target.classList.add('active');
-                
-                // Filter items
-                currentCategory = e.target.dataset.category;
-                filterItems(currentCategory);
+            const target = e.target.closest('a[data-category]');
+            if (!target) return;
+
+            const links = categoryContainer.querySelectorAll('a[data-category]');
+            // Toggle behavior: if already active, deactivate (show all), otherwise activate only this
+            if (target.classList.contains('active')) {
+                target.classList.remove('active');
+                // show all items
+                displayItems(allItems);
+            } else {
+                links.forEach(l => l.classList.remove('active'));
+                target.classList.add('active');
+                const category = target.dataset.category;
+                applyCategoryFilter(category);
             }
         });
     }
@@ -101,7 +52,11 @@ async function loadItems() {
         }
         
         allItems = data;
-        displayItems(allItems);
+            displayItems(allItems);
+            // Apply active category filter after items are loaded
+            const activeLink = document.querySelector('#category-links a.active');
+            const activeCategory = activeLink ? activeLink.dataset.category : null;
+            applyCategoryFilter(activeCategory);
         hideLoading();
         
     } catch (error) {
@@ -167,44 +122,7 @@ function createItemCard(item) {
     `;
 }
 
-// Filter items by category
-// Filter items by category (server-side)
-async function filterItems(category) {
-    try {
-        showLoading();
-        
-        // Fetch filtered items from server
-        const url = category === 'all' ? 'api/get_items.php' : `api/get_items.php?category=${encodeURIComponent(category)}`;
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        
-        allItems = data; // Update the global array
-        displayItems(allItems);
-        hideLoading();
-        
-    } catch (error) {
-        console.error('Error filtering items:', error);
-        hideLoading();
-        // Fallback to client-side filtering if server-side fails
-        if (category === 'all') {
-            displayItems(allItems);
-        } else {
-            const filteredItems = allItems.filter(item => {
-                return item.category && item.category.toLowerCase() === category.toLowerCase();
-            });
-            displayItems(filteredItems);
-        }
-    }
-}
+// (category filtering removed)
 
 // Toggle like status
 async function toggleLike(itemId, element) {
@@ -330,4 +248,94 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Setup filter button event listeners (Recent, Most Liked, Most Viewed)
+function setupFilterButtons() {
+    const filterRow = document.querySelector('.filterRow');
+    if (!filterRow) return;
+
+    filterRow.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = e.target.closest('.filterSettings');
+        if (!target) return;
+
+        const buttons = filterRow.querySelectorAll('.filterSettings');
+        // Toggle behavior: if already active, deactivate and show all items; otherwise activate
+        if (target.classList.contains('active')) {
+            target.classList.remove('active');
+            displayItems(allItems);
+        } else {
+            buttons.forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+            const filter = target.textContent.trim().toLowerCase();
+            applyFilter(filter);
+        }
+    });
+}
+
+// Apply client-side sorting filter to items currently loaded in allItems
+function applyFilter(filter) {
+    if (!Array.isArray(allItems)) return;
+
+    let itemsCopy = [...allItems];
+
+    if (filter === 'recent' || filter === 'recently added' || filter === 'recently') {
+        // Sort by created_at descending (newest first)
+        itemsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (filter.includes('liked')) {
+        // Sort by likes descending
+        itemsCopy.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    } else if (filter.includes('view')) {
+        // Sort by views descending
+        itemsCopy.sort((a, b) => (b.views || 0) - (a.views || 0));
+    }
+
+    displayItems(itemsCopy);
+}
+
+// Apply second-level category filters: popular, recent, clonable
+function applyCategoryFilter(category) {
+    if (!category || !Array.isArray(allItems)) {
+        displayItems(allItems);
+        return;
+    }
+
+    let itemsCopy = [...allItems];
+
+    if (category === 'popular') {
+        // Define popular as top 30% by likes; fall back to views if likes missing
+        const values = itemsCopy.map(i => i.likes || i.views || 0).sort((a,b)=>b-a);
+        const thresholdIndex = Math.max(0, Math.floor(values.length * 0.3) - 1);
+        const threshold = values[thresholdIndex] || 0;
+        itemsCopy = itemsCopy.filter(i => (i.likes || i.views || 0) >= threshold);
+        // sort by likes then views
+        itemsCopy.sort((a,b) => (b.likes || b.views || 0) - (a.likes || a.views || 0));
+    } else if (category === 'recent') {
+        // Recent: items created in last 30 days; if none, show newest first
+        const now = Date.now();
+        const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
+        const recent = itemsCopy.filter(i => i.created_at && (now - new Date(i.created_at)) <= THIRTY_DAYS);
+        if (recent.length > 0) {
+            recent.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+            itemsCopy = recent;
+        } else {
+            itemsCopy.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+    } else if (category === 'clonable') {
+        // Clonable: items explicitly tagged as 'clonable' in category OR containing 'clone' in title/description
+        itemsCopy = itemsCopy.filter(i => {
+            const cat = (i.category || '').toLowerCase();
+            const title = (i.title || '').toLowerCase();
+            const desc = (i.description || '').toLowerCase();
+            return cat === 'clonable' || title.includes('clone') || desc.includes('clone');
+        });
+        // sort by created_at desc
+        itemsCopy.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else {
+        // unknown category - show everything
+        itemsCopy.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
+    displayItems(itemsCopy);
 }
