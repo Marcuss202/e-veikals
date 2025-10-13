@@ -20,12 +20,12 @@
                 </div>
             </div>
             <div class="rightNavBar">
-                <!-- Default login/signup (shown when not logged in) -->
+                <!-- login/signup -->
                 <div id="guest-nav" class="nav-section">
                     <a href="../loginRegister.html">Log in / Sign up</a>
                 </div>
                 
-                <!-- User navigation (shown when logged in) -->
+                <!-- logged in -->
                 <div id="user-nav" class="nav-section hidden">
                     <a href="../api/admin.php" id="admin-panel-btn" class="admin-btn hidden">Admin Panel</a>
                     <div class="user-dropdown">
@@ -45,24 +45,21 @@
         </div>
     </div>
 
-    <!-- Loading indicator -->
     <div id="loading" class="loading">
         <div class="spinner"></div>
         <p>Loading product...</p>
     </div>
 
-    <!-- Product detail content -->
     <main class="product-main">
         <div class="wrapper">
             <div class="product-container" id="product-container">
-                <!-- Product details will be loaded here -->
+                <!-- Product details -->
             </div>
         </div>
     </main>
 
     <script src="../assets/scripts/product.js"></script>
     <script>
-        // Check session status and update navigation
         async function updateNavigation() {
             try {
                 const response = await fetch('../api/session_status.php');
@@ -96,8 +93,8 @@
                 userNav.classList.add('hidden');
             }
         }
-        
-        // Setup dropdown functionality
+
+        // dropdown
         function setupUserDropdown() {
             const userBtn = document.getElementById('user-account-btn');
             const dropdownMenu = document.getElementById('user-dropdown-menu');
@@ -116,7 +113,6 @@
             }
         }
         
-        // Initialize navigation when page loads
         document.addEventListener('DOMContentLoaded', function() {
             updateNavigation();
             setupUserDropdown();

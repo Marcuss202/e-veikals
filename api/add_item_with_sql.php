@@ -8,7 +8,6 @@ try {
         throw new Exception('Only POST method allowed');
     }
     
-    // Debug: Log all received data
     error_log("POST data: " . print_r($_POST, true));
     error_log("FILES data: " . print_r($_FILES, true));
     
@@ -17,7 +16,7 @@ try {
     $description = trim($_POST['description'] ?? '');
     $category = trim($_POST['hashtags'] ?? '');
 
-    // handle file upload (optional)
+    // handle file upload
     $image_url = '';
     if (!empty($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
         error_log("Processing file upload");
@@ -28,7 +27,6 @@ try {
         }
         $tmp = $_FILES['image_file']['tmp_name'];
         $name = basename($_FILES['image_file']['name']);
-        // sanitize filename
         $ext = pathinfo($name, PATHINFO_EXTENSION);
         $base = pathinfo($name, PATHINFO_FILENAME);
         $safeBase = preg_replace('/[^A-Za-z0-9-_]/', '_', $base);
@@ -41,10 +39,8 @@ try {
             throw new Exception('Failed to move uploaded file');
         }
         
-        // Set proper permissions on the uploaded file
         chmod($target, 0644);
         
-        // accessible URL path relative to project
         $image_url = 'uploads/' . $targetName;
         error_log("File uploaded successfully: " . $image_url);
     } else {
@@ -74,12 +70,10 @@ try {
                     break;
             }
         }
-        // optional: allow image URL field if provided
         $image_url = trim($_POST['image_url'] ?? '');
         error_log("Using image URL: " . $image_url);
     }
     
-    // Validate required fields
     if (empty($title) || empty($description) || empty($category)) {
         throw new Exception('All fields except image are required');
     }

@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Database configuration - use same settings as connect.php
 $host = '127.0.0.1';
 $port = '3307';
 $dbname = 'e-veikalsDB';
@@ -77,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         $errors = [];
         
-        // Basic validation
         if (empty($username)) {
             $errors[] = 'Username is required';
         }
@@ -91,29 +89,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors[] = 'Please confirm your password';
         }
         
-        // Username validation
         if (!empty($username)) {
             $usernameErrors = validateUsername($username);
             $errors = array_merge($errors, $usernameErrors);
         }
         
-        // Email validation
         if (!empty($email) && !validateEmail($email)) {
             $errors[] = 'Please enter a valid email address';
         }
         
-        // Password validation
         if (!empty($password)) {
             $passwordErrors = validatePassword($password);
             $errors = array_merge($errors, $passwordErrors);
         }
         
-        // Confirm password validation
         if (!empty($password) && !empty($confirmPassword) && $password !== $confirmPassword) {
             $errors[] = 'Passwords do not match';
         }
         
-        // If there are validation errors, return them
         if (!empty($errors)) {
             $errorMessage = implode('. ', $errors);
             header("Location: ../views/loginRegister.html?error=" . urlencode($errorMessage));
@@ -174,7 +167,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         $errors = [];
         
-        // Basic validation
         if (empty($email)) {
             $errors[] = 'Email is required';
         }
@@ -182,12 +174,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors[] = 'Password is required';
         }
         
-        // Email format validation
         if (!empty($email) && !validateEmail($email)) {
             $errors[] = 'Please enter a valid email address';
         }
         
-        // If there are validation errors, return them
         if (!empty($errors)) {
             $errorMessage = implode('. ', $errors);
             header("Location: ../views/loginRegister.html?error=" . urlencode($errorMessage));

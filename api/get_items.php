@@ -20,7 +20,6 @@ try {
         // Check if current user has liked this item
         if (isset($_SESSION['user_id'])) {
             try {
-                // Create user_likes table if it doesn't exist
                 $pdo->exec("CREATE TABLE IF NOT EXISTS user_likes (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     user_id INT NOT NULL,
@@ -57,10 +56,8 @@ try {
         $stmt->execute([$category, $excludeId, $limit]);
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Add user liked status for each item
         if (isset($_SESSION['user_id'])) {
             try {
-                // Create user_likes table if it doesn't exist
                 $pdo->exec("CREATE TABLE IF NOT EXISTS user_likes (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     user_id INT NOT NULL,
@@ -100,9 +97,7 @@ try {
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Add user liked status for each item
     if (isset($_SESSION['user_id'])) {
-        // Create user_likes table if it doesn't exist
         try {
             $pdo->exec("CREATE TABLE IF NOT EXISTS user_likes (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -114,7 +109,6 @@ try {
                 INDEX idx_item_id (item_id)
             )");
         } catch (Exception $e) {
-            // Table creation failed, continue without user liked status
             error_log('Failed to create user_likes table: ' . $e->getMessage());
         }
         
@@ -124,7 +118,6 @@ try {
                 $stmt->execute([$_SESSION['user_id'], $item['id']]);
                 $item['userLiked'] = $stmt->rowCount() > 0;
             } catch (Exception $e) {
-                // If query fails, default to not liked
                 $item['userLiked'] = false;
                 error_log('Failed to check user like status: ' . $e->getMessage());
             }

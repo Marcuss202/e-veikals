@@ -1,7 +1,6 @@
 // Global variables
 let allItems = [];
 
-// Initialize the page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     loadItems();
@@ -9,9 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Setup event listeners
 function setupEventListeners() {
-    // Category filter listeners (second-level nav)
     const categoryContainer = document.getElementById('category-links');
     if (categoryContainer) {
         categoryContainer.addEventListener('click', function(e) {
@@ -20,10 +17,8 @@ function setupEventListeners() {
             if (!target) return;
 
             const links = categoryContainer.querySelectorAll('a[data-category]');
-            // Toggle behavior: if already active, deactivate (show all), otherwise activate only this
             if (target.classList.contains('active')) {
                 target.classList.remove('active');
-                // show all items
                 displayItems(allItems);
             } else {
                 links.forEach(l => l.classList.remove('active'));
@@ -35,7 +30,7 @@ function setupEventListeners() {
     }
 }
 
-// Load items from the database
+// Load from database
 async function loadItems() {
     try {
         showLoading();
@@ -53,7 +48,6 @@ async function loadItems() {
         
         allItems = data;
             displayItems(allItems);
-            // Apply active category filter after items are loaded
             const activeLink = document.querySelector('#category-links a.active');
             const activeCategory = activeLink ? activeLink.dataset.category : null;
             applyCategoryFilter(activeCategory);
@@ -66,7 +60,7 @@ async function loadItems() {
     }
 }
 
-// Display items in the grid
+// Display items in grid
 function displayItems(items) {
     const grid = document.getElementById('items-grid');
     
@@ -81,15 +75,9 @@ function displayItems(items) {
     }
     
     grid.innerHTML = items.map(item => createItemCard(item)).join('');
-    
-    // Mark already liked items
-    markLikedItems();
-    
-    // Add click listeners to like buttons
-    setupLikeButtons();
 }
 
-// Create HTML for a single item card
+// HTML for single card
 function createItemCard(item) {
     
     const likedClass = item.userLiked ? 'liked' : '';
@@ -122,12 +110,9 @@ function createItemCard(item) {
     `;
 }
 
-// (category filtering removed)
 
-// Toggle like status
 async function toggleLike(itemId, element) {
     try {
-        // Check if user is logged in by checking session
         const sessionResponse = await fetch('api/session_status.php');
         const sessionData = await sessionResponse.json();
         
@@ -142,7 +127,6 @@ async function toggleLike(itemId, element) {
         
         const action = isCurrentlyLiked ? 'unlike' : 'like';
         
-        // Update UI immediately for better UX
         if (action === 'like') {
             likeCountSpan.textContent = currentCount + 1;
             element.classList.add('liked');
@@ -163,17 +147,14 @@ async function toggleLike(itemId, element) {
         const data = await response.json();
         
         if (data.success) {
-            // Update with actual count from database
             likeCountSpan.textContent = data.likes;
             
-            // Update visual state based on server response
             if (data.userLiked) {
                 element.classList.add('liked');
             } else {
                 element.classList.remove('liked');
             }
         } else {
-            // Revert UI changes if database update failed
             if (action === 'like') {
                 likeCountSpan.textContent = currentCount;
                 element.classList.remove('liked');
@@ -189,7 +170,6 @@ async function toggleLike(itemId, element) {
         
     } catch (error) {
         console.error('Error updating likes:', error);
-        // Revert UI changes on error
         const likeCountSpan = element.querySelector('.like-count');
         const currentCount = parseInt(likeCountSpan.textContent);
         const isCurrentlyLiked = element.classList.contains('liked');
@@ -204,25 +184,10 @@ async function toggleLike(itemId, element) {
     }
 }
 
-// View item details
 function viewItem(itemId) {
-    // Redirect to product detail page
     window.location.href = `./views/product.html?id=${itemId}`;
 }
 
-// Setup like button event listeners
-function setupLikeButtons() {
-    // Event listeners are handled inline in the HTML for simplicity
-    // In a larger app, you might want to use event delegation
-}
-
-// Mark already liked items
-function markLikedItems() {
-    // This function is no longer needed since we get the liked status from the database
-    // The liked status is now included in the item data from get_items.php
-}
-
-// Utility functions
 function showLoading() {
     document.getElementById('loading').classList.remove('hidden');
 }
@@ -250,7 +215,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Setup filter button event listeners (Recent, Most Liked, Most Viewed)
 function setupFilterButtons() {
     const filterRow = document.querySelector('.filterRow');
     if (!filterRow) return;
@@ -261,7 +225,6 @@ function setupFilterButtons() {
         if (!target) return;
 
         const buttons = filterRow.querySelectorAll('.filterSettings');
-        // Toggle behavior: if already active, deactivate and show all items; otherwise activate
         if (target.classList.contains('active')) {
             target.classList.remove('active');
             displayItems(allItems);
@@ -274,27 +237,22 @@ function setupFilterButtons() {
     });
 }
 
-// Apply client-side sorting filter to items currently loaded in allItems
 function applyFilter(filter) {
     if (!Array.isArray(allItems)) return;
 
     let itemsCopy = [...allItems];
 
     if (filter === 'recent' || filter === 'recently added' || filter === 'recently') {
-        // Sort by created_at descending (newest first)
         itemsCopy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     } else if (filter.includes('liked')) {
-        // Sort by likes descending
         itemsCopy.sort((a, b) => (b.likes || 0) - (a.likes || 0));
     } else if (filter.includes('view')) {
-        // Sort by views descending
         itemsCopy.sort((a, b) => (b.views || 0) - (a.views || 0));
     }
 
     displayItems(itemsCopy);
 }
 
-// Apply second-level category filters: popular, recent, clonable
 function applyCategoryFilter(category) {
     if (!category || !Array.isArray(allItems)) {
         displayItems(allItems);
@@ -304,15 +262,12 @@ function applyCategoryFilter(category) {
     let itemsCopy = [...allItems];
 
     if (category === 'popular') {
-        // Define popular as top 30% by likes; fall back to views if likes missing
         const values = itemsCopy.map(i => i.likes || i.views || 0).sort((a,b)=>b-a);
         const thresholdIndex = Math.max(0, Math.floor(values.length * 0.3) - 1);
         const threshold = values[thresholdIndex] || 0;
         itemsCopy = itemsCopy.filter(i => (i.likes || i.views || 0) >= threshold);
-        // sort by likes then views
         itemsCopy.sort((a,b) => (b.likes || b.views || 0) - (a.likes || a.views || 0));
     } else if (category === 'recent') {
-        // Recent: items created in last 30 days; if none, show newest first
         const now = Date.now();
         const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
         const recent = itemsCopy.filter(i => i.created_at && (now - new Date(i.created_at)) <= THIRTY_DAYS);
@@ -323,17 +278,14 @@ function applyCategoryFilter(category) {
             itemsCopy.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
         }
     } else if (category === 'clonable') {
-        // Clonable: items explicitly tagged as 'clonable' in category OR containing 'clone' in title/description
         itemsCopy = itemsCopy.filter(i => {
             const cat = (i.category || '').toLowerCase();
             const title = (i.title || '').toLowerCase();
             const desc = (i.description || '').toLowerCase();
             return cat === 'clonable' || title.includes('clone') || desc.includes('clone');
         });
-        // sort by created_at desc
         itemsCopy.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
     } else {
-        // unknown category - show everything
         itemsCopy.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
     }
 

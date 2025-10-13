@@ -8,16 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const tab = this.getAttribute('data-tab');
             
-            // Remove active class from all tabs
             tabBtns.forEach(b => b.classList.remove('active'));
             
-            // Add active class to clicked tab
             this.classList.add('active');
             
-            // Clear all error messages when switching tabs
             clearErrors();
             
-            // Show/hide forms
             if (tab === 'login') {
                 loginForm.classList.remove('hidden');
                 registerForm.classList.add('hidden');
@@ -28,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Function to show error message
     function showError(messageId, message) {
         const errorElement = document.getElementById(messageId);
         if (errorElement) {
@@ -37,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to clear error messages
     function clearErrors() {
         const errorMessages = document.querySelectorAll('.error-message');
         errorMessages.forEach(error => {
@@ -46,13 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Email validation
     function isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
 
-    // Username validation
     function validateUsername(username) {
         const errors = [];
         
@@ -72,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return errors;
     }
 
-    // Password validation
     function validatePassword(password) {
         const errors = [];
         
@@ -169,7 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Confirm password validation
         if (!confirmPassword) {
             errorMessages.push('Please confirm your password');
             hasErrors = true;
@@ -185,17 +175,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Real-time validation feedback
+    // Real-time validation
     const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
     inputs.forEach(input => {
         input.addEventListener('blur', function() {
             const value = this.value.trim();
             const name = this.name;
             
-            // Clear previous individual field errors (if any)
             this.classList.remove('input-error');
             
-            // Validate individual fields
             if (name === 'email' && value && !isValidEmail(value)) {
                 this.classList.add('input-error');
             } else if (name === 'username' && value) {
@@ -211,21 +199,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Remove error styling when user starts typing
         input.addEventListener('input', function() {
             this.classList.remove('input-error');
         });
 
-        // Real-time input filtering for username and password
         input.addEventListener('input', function() {
             const name = this.name;
             const value = this.value;
             
             if (name === 'username') {
-                // Remove any characters that aren't letters, numbers, or underscores
                 this.value = value.replace(/[^a-zA-Z0-9_]/g, '');
             } else if (name === 'password' || name === 'confirm_password') {
-                // Remove spaces and invalid characters from password
                 this.value = value.replace(/\s/g, '').replace(/[^a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g, '');
             }
         });
@@ -236,10 +220,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             setTimeout(() => {
                 if (name === 'username') {
-                    // Clean username field after paste
                     this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '');
                 } else if (name === 'password' || name === 'confirm_password') {
-                    // Clean password field after paste
                     this.value = this.value.replace(/\s/g, '').replace(/[^a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g, '');
                 }
             }, 10);

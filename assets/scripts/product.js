@@ -2,18 +2,15 @@
 let currentProduct = null;
 let allItems = [];
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     loadProduct();
 });
 
-// Get product ID from URL parameters
 function getProductId() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');
 }
 
-// Load product details
 async function loadProduct() {
     const productId = getProductId();
     
@@ -24,8 +21,6 @@ async function loadProduct() {
 
     try {
         showLoading();
-        
-        // Load product details
         const response = await fetch(`../api/get_items.php?id=${productId}`);
         
         if (!response.ok) {
@@ -41,7 +36,6 @@ async function loadProduct() {
         currentProduct = data;
         displayProduct(currentProduct);
         
-        // Update view count
         await updateViews(productId);
         
         hideLoading();
@@ -53,7 +47,6 @@ async function loadProduct() {
     }
 }
 
-// Display product details
 function displayProduct(product) {
     const container = document.getElementById('product-container');
     
@@ -110,14 +103,11 @@ function displayProduct(product) {
         </div>
     `;
     
-    // Update page title
     document.title = `${product.title} - E-veikals`;
     
-    // Check if item is already liked
     markLikedItem(product);
 }
 
-// Check and mark if item is already liked
 function markLikedItem(product) {
     if (product.userLiked) {
         const likeBtn = document.getElementById('like-btn');
@@ -127,10 +117,8 @@ function markLikedItem(product) {
     }
 }
 
-// Toggle like status
 async function toggleLike(productId) {
     try {
-        // Check if user is logged in
         const sessionResponse = await fetch('../api/session_status.php');
         const sessionData = await sessionResponse.json();
         
@@ -146,7 +134,6 @@ async function toggleLike(productId) {
         
         const action = isCurrentlyLiked ? 'unlike' : 'like';
         
-        // Update UI immediately
         if (action === 'like') {
             likeCount.textContent = currentCount + 1;
             likeBtn.classList.add('liked');
@@ -155,7 +142,6 @@ async function toggleLike(productId) {
             likeBtn.classList.remove('liked');
         }
         
-        // Update database
         const response = await fetch('../api/update_likes.php', {
             method: 'POST',
             headers: {
@@ -167,17 +153,14 @@ async function toggleLike(productId) {
         const data = await response.json();
         
         if (data.success) {
-            // Update with actual count from database
             likeCount.textContent = data.likes;
             
-            // Update visual state based on server response
             if (data.userLiked) {
                 likeBtn.classList.add('liked');
             } else {
                 likeBtn.classList.remove('liked');
             }
         } else {
-            // Revert changes if failed
             if (action === 'like') {
                 likeCount.textContent = currentCount;
                 likeBtn.classList.remove('liked');
@@ -191,7 +174,6 @@ async function toggleLike(productId) {
             }
         }
         
-        // Add animation
         likeBtn.classList.add('animate');
         setTimeout(() => likeBtn.classList.remove('animate'), 300);
         
@@ -200,24 +182,19 @@ async function toggleLike(productId) {
     }
 }
 
-// Update view count
 async function updateViews(productId) {
     try {
-        // Check if user has already viewed this product in this session
         const viewedProducts = JSON.parse(sessionStorage.getItem('viewedProducts') || '[]');
         const productKey = `product_${productId}`;
         
         if (viewedProducts.includes(productKey)) {
-            // User has already viewed this product, don't increment
             console.log('Product already viewed in this session');
             return;
         }
         
-        // Add this product to viewed list
         viewedProducts.push(productKey);
         sessionStorage.setItem('viewedProducts', JSON.stringify(viewedProducts));
         
-        // Update view count in database
         const response = await fetch('../api/update_views.php', {
             method: 'POST',
             headers: {
@@ -229,7 +206,6 @@ async function updateViews(productId) {
         const data = await response.json();
         
         if (data.success) {
-            // Update the view count in the UI with the actual count from database
             const viewCount = document.getElementById('view-count');
             if (viewCount) {
                 viewCount.textContent = data.views;
@@ -241,7 +217,6 @@ async function updateViews(productId) {
     }
 }
 
-// Share product
 function shareProduct() {
     if (navigator.share && currentProduct) {
         navigator.share({
@@ -250,23 +225,19 @@ function shareProduct() {
             url: window.location.href
         }).catch(err => console.log('Error sharing:', err));
     } else {
-        // Fallback: copy URL to clipboard
         navigator.clipboard.writeText(window.location.href).then(() => {
             alert('Product URL copied to clipboard!');
         }).catch(err => {
             console.error('Could not copy text: ', err);
-            // Further fallback: show URL in a prompt
             prompt('Copy this URL to share:', window.location.href);
         });
     }
 }
 
-// Navigate to another product
 function goToProduct(productId) {
     window.location.href = `../views/product.html?id=${productId}`;
 }
 
-// Utility functions
 function showLoading() {
     document.getElementById('loading').classList.remove('hidden');
 }

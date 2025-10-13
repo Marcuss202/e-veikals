@@ -30,7 +30,6 @@ $userId = (int)$_SESSION['user_id'];
 $action = $input['action'] ?? 'like';
 
 try {
-    // Create user_likes table if it doesn't exist
     $pdo->exec("CREATE TABLE IF NOT EXISTS user_likes (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -42,7 +41,6 @@ try {
     )");
     
     if ($action === 'like') {
-        // Check if user already liked this item
         $stmt = $pdo->prepare("SELECT id FROM user_likes WHERE user_id = ? AND item_id = ?");
         $stmt->execute([$userId, $itemId]);
         
@@ -51,20 +49,16 @@ try {
             exit;
         }
         
-        // Add like record
         $stmt = $pdo->prepare("INSERT INTO user_likes (user_id, item_id) VALUES (?, ?)");
         $stmt->execute([$userId, $itemId]);
         
-        // Update items table
         $stmt = $pdo->prepare("UPDATE items SET likes = likes + 1 WHERE id = ?");
         $stmt->execute([$itemId]);
         
     } else if ($action === 'unlike') {
-        // Remove like record
         $stmt = $pdo->prepare("DELETE FROM user_likes WHERE user_id = ? AND item_id = ?");
         $stmt->execute([$userId, $itemId]);
         
-        // Update items table
         $stmt = $pdo->prepare("UPDATE items SET likes = GREATEST(likes - 1, 0) WHERE id = ?");
         $stmt->execute([$itemId]);
         
@@ -72,12 +66,10 @@ try {
         throw new Exception('Invalid action');
     }
     
-    // Get updated like count
     $stmt = $pdo->prepare("SELECT likes FROM items WHERE id = ?");
     $stmt->execute([$itemId]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // Check if current user has liked this item
     $stmt = $pdo->prepare("SELECT id FROM user_likes WHERE user_id = ? AND item_id = ?");
     $stmt->execute([$userId, $itemId]);
     $userLiked = $stmt->rowCount() > 0;

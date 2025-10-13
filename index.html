@@ -21,12 +21,12 @@
                 </div>
             </div>
             <div class="rightNavBar">
-                <!-- Default login/signup (shown when not logged in) -->
+                <!--Default login/signup -->
                 <div id="guest-nav" class="nav-section">
                     <a href="./views/loginRegister.html">Log in / Sign up</a>
                 </div>
                 
-                <!-- User navigation (shown when logged in) -->
+                <!-- logged in -->
                 <div id="user-nav" class="nav-section hidden">
                     <a href="./api/admin.php" id="admin-panel-btn" class="admin-btn hidden">Admin Panel</a>
                     <div class="user-dropdown">
@@ -56,13 +56,13 @@
         </div>
     </div>
 
-    <!-- Loading indicator -->
+    <!-- Loading  -->
     <div id="loading" class="loading">
         <div class="spinner"></div>
         <p>Loading products...</p>
     </div>
 
-    <!-- Main content area -->
+    <!-- Main -->
     <main class="main-content">
         <div class="wrapper">
             <div class="filterRow">
@@ -72,14 +72,14 @@
             </div>
 
             <div id="items-grid" class="items-grid">
-                <!-- Items will be dynamically loaded here -->
+                <!-- Item cards  -->
             </div>
         </div>
     </main>
 
     <script src="./assets/scripts/script.js?v=7"></script>
     <script>
-        // Check session status and update navigation
+        //  session status 
         async function updateNavigation() {
             try {
                 const response = await fetch('api/session_status.php');
@@ -91,26 +91,22 @@
                 const usernameHeader = document.getElementById('username-display-header');
                 
                 if (session.loggedIn) {
-                    // User is logged in - hide guest nav, show user nav
                     guestNav.classList.add('hidden');
                     userNav.classList.remove('hidden');
                     usernameHeader.textContent = session.username;
                     
-                    // Show admin panel if user is admin
                     if (session.isAdmin) {
                         adminBtn.classList.remove('hidden');
                     } else {
                         adminBtn.classList.add('hidden');
                     }
                 } else {
-                    // User is not logged in - show guest nav, hide user nav
                     guestNav.classList.remove('hidden');
                     userNav.classList.add('hidden');
                     adminBtn.classList.add('hidden');
                 }
             } catch (error) {
                 console.error('Error checking session status:', error);
-                // On error, show guest navigation
                 const guestNav = document.getElementById('guest-nav');
                 const userNav = document.getElementById('user-nav');
                 guestNav.classList.remove('hidden');
@@ -118,7 +114,7 @@
             }
         }
         
-        // Setup dropdown functionality
+        // dropdown
         function setupUserDropdown() {
             const userBtn = document.getElementById('user-account-btn');
             const dropdownMenu = document.getElementById('user-dropdown-menu');
